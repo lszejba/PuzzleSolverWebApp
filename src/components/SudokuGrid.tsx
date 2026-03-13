@@ -1,14 +1,26 @@
 import { useState } from "react";
 import ButtonsRow from "./ButtonsRow";
 
-interface CellProps {
-  index: number;
-  cell: number | null;
-  selectedIndex: number;
-  setSelectedIndex: (newIndex: number) => void;
+interface CellData {
+  value: string;
+  hints: string;
 }
 
-const Cell = ({ index, cell, selectedIndex, setSelectedIndex }: CellProps) => {
+interface CellProps {
+  index: number;
+  selectedIndex: number;
+  setSelectedIndex: (newIndex: number) => void;
+  value: string;
+  hints: string;
+}
+
+const Cell = ({
+  index,
+  selectedIndex,
+  setSelectedIndex,
+  value,
+  hints,
+}: CellProps) => {
   const getCellBorder = (index: number) => {
     const row = Math.floor(index / 9);
     const col = index % 9;
@@ -23,6 +35,24 @@ const Cell = ({ index, cell, selectedIndex, setSelectedIndex }: CellProps) => {
     return `${borderTop} ${borderLeft} ${borderBottom} ${borderRight} border-gray-400`;
   };
 
+  const getText = (value: string, hints: string) => {
+    if (value === "") {
+      const digits = new Set(Array.from(hints, Number));
+      const rows: string[] = [];
+      for (let row = 0; row < 3; row++) {
+        const cells: string[] = [];
+        for (let col = 1; col <= 3; col++) {
+          const digit = row * 3 + col;
+          cells.push(digits.has(digit) ? String(digit) : " ");
+        }
+        rows.push(cells.join("\t"));
+      }
+      return rows.join("\n");
+    } else {
+      return value;
+    }
+  };
+
   const handleButtonPress = () => {
     if (selectedIndex === -1) {
       setSelectedIndex(index);
@@ -35,31 +65,64 @@ const Cell = ({ index, cell, selectedIndex, setSelectedIndex }: CellProps) => {
     <button
       key={index}
       onClick={() => handleButtonPress()}
-      className={`w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100" : "bg-transparent"} ${getCellBorder(index)}`}
+      className={`${value === "" ? "text-xs" : "text-2xl"} whitespace-pre w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100" : "bg-transparent"} ${getCellBorder(index)}`}
     >
-      {cell}
+      {getText(value, hints)}
     </button>
   );
 };
 
 const SudokuGrid = () => {
-  const [cells, setCells] = useState<(number | null)[]>(Array(81).fill(null));
+  const [cells, setCells] = useState<CellData[]>(
+    Array(81)
+      .fill(null)
+      .map(() => ({ value: "", hints: "" })),
+  );
   const [selectedIndex, setSelectedIndex] = useState(-1);
+
+  const handleButtonsRowChange = (
+    index: number,
+    field: "value" | "hints",
+    newValue: string,
+  ) => {
+    setCells((prev) =>
+      prev.map((cell, i) =>
+        i === index ? { ...cell, [field]: newValue } : cell,
+      ),
+    );
+  };
 
   return (
     <>
       <div className="grid grid-cols-9">
-        {cells.map((cell, index) => (
+        {cells.map(({ value, hints }, index) => (
           <Cell
             index={index}
-            cell={cell}
             selectedIndex={selectedIndex}
             setSelectedIndex={setSelectedIndex}
+            value={value}
+            hints={hints}
           />
         ))}
       </div>
-      <ButtonsRow children="!" type="main" disabled={selectedIndex === -1} />
-      <ButtonsRow children="?" type="hint" disabled={selectedIndex === -1} />
+      <ButtonsRow
+        children="!"
+        type="main"
+        selectedIndex={selectedIndex}
+        values={selectedIndex === -1 ? "" : cells[selectedIndex].value}
+        onChange={(newValue) =>
+          handleButtonsRowChange(selectedIndex, "value", newValue)
+        }
+      />
+      <ButtonsRow
+        children="?"
+        type="hint"
+        selectedIndex={selectedIndex}
+        values={selectedIndex === -1 ? "" : cells[selectedIndex].hints}
+        onChange={(newValue) =>
+          handleButtonsRowChange(selectedIndex, "hints", newValue)
+        }
+      />
     </>
   );
 };

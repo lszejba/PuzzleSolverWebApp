@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ButtonsRowProps {
   children: string;
   type: "main" | "hint";
-  disabled: boolean;
+  selectedIndex: number;
+  values: string;
+  onChange?: (newValue: string) => void;
 }
 
 const buttonSizeMap: Record<string, string> = {
@@ -26,23 +28,39 @@ const buttonDisabled: string = "bg-gray-200 text-gray-600 shadow";
 const ButtonsRow = ({
   children,
   type = "main",
-  disabled = false,
+  selectedIndex,
+  values = "",
+  onChange,
 }: ButtonsRowProps) => {
-  const [pressedButtons, setPressedButtons] = useState<Set<number>>(new Set());
+  const [pressedButtons, setPressedButtons] = useState(
+    () => new Set<number>(Array.from(values, Number)),
+  );
+
+  useEffect(() => {
+    setPressedButtons(new Set(Array.from(values, Number)));
+  }, [values]);
 
   const handleButtonPress = (num: number) => {
     setPressedButtons((prev) => {
-      if (disabled) {
+      if (selectedIndex === -1) {
+        return prev;
+      }
+      if (type === "main" && prev.size > 0 && !prev.has(num)) {
         return prev;
       }
       const next = new Set(prev);
       next.has(num) ? next.delete(num) : next.add(num);
+      onChange?.(
+        Array.from(next)
+          .sort((a, b) => a - b)
+          .join(""),
+      );
       return next;
     });
   };
 
   const getButtonStyle = (num: number): string => {
-    if (disabled) return buttonDisabled;
+    if (selectedIndex === -1) return buttonDisabled;
     return pressedButtons.has(num)
       ? buttonPressedMap[type]
       : buttonDefaultMap[type];
@@ -52,7 +70,6 @@ const ButtonsRow = ({
     <div className="flex gap-2">
       <h3>{children}</h3>
       {Array.from({ length: 9 }, (_, i) => i + 1).map((num) => {
-        const isPressed = pressedButtons.has(num);
         return (
           <button
             key={num}
