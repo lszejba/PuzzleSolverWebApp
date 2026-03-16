@@ -16,7 +16,7 @@ function App() {
           <Route path="/griddlers" element={<GriddlersPage />} />
         </Routes>
         <footer className="flex justify-center items-center p-4">
-          @2026 Lukasz Szejba
+          @2026 by Łukasz Szejba
         </footer>
       </BrowserRouter>
     </div>

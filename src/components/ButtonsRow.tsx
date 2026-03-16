@@ -6,6 +6,7 @@ interface ButtonsRowProps {
   selectedIndex: number;
   values: string;
   onChange?: (newValue: string) => void;
+  onAfterChange?: () => void;
 }
 
 const buttonSizeMap: Record<string, string> = {
@@ -31,6 +32,7 @@ const ButtonsRow = ({
   selectedIndex,
   values = "",
   onChange,
+  onAfterChange,
 }: ButtonsRowProps) => {
   const [pressedButtons, setPressedButtons] = useState(
     () => new Set<number>(Array.from(values, Number)),
@@ -45,16 +47,21 @@ const ButtonsRow = ({
       if (selectedIndex === -1) {
         return prev;
       }
-      if (type === "main" && prev.size > 0 && !prev.has(num)) {
-        return prev;
+
+      let next: Set<number>;
+      if (type === "main" && prev.size > 0) {
+        next = prev.has(num) ? new Set() : new Set([num]);
+      } else {
+        next = new Set(prev);
+        next.has(num) ? next.delete(num) : next.add(num);
       }
-      const next = new Set(prev);
-      next.has(num) ? next.delete(num) : next.add(num);
+
       onChange?.(
         Array.from(next)
           .sort((a, b) => a - b)
           .join(""),
       );
+      onAfterChange?.();
       return next;
     });
   };

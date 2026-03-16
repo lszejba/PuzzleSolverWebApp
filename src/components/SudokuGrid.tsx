@@ -65,7 +65,7 @@ const Cell = ({
     <button
       key={index}
       onClick={() => handleButtonPress()}
-      className={`${value === "" ? "text-xs" : "text-2xl"} whitespace-pre w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100" : "bg-transparent"} ${getCellBorder(index)}`}
+      className={`${value === "" ? "text-xs" : "text-2xl"} whitespace-pre w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100/50" : "bg-transparent"} ${getCellBorder(index)}`}
     >
       {getText(value, hints)}
     </button>
@@ -113,6 +113,7 @@ const SudokuGrid = () => {
         onChange={(newValue) =>
           handleButtonsRowChange(selectedIndex, "value", newValue)
         }
+        onAfterChange={() => setSelectedIndex(-1)}
       />
       <ButtonsRow
         children="?"
