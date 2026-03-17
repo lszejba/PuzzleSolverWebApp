@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import ButtonsRow from "./ButtonsRow";
-import { validateCells } from "../utils/SudokuValidation";
+import { validateCells, checkIfCompleted } from "../utils/SudokuValidation";
 import type { CellData } from "../types/Sudoku";
+import SudokuGameOverModal from "./SudokuGameOverModal";
+import confetti from "canvas-confetti";
 
 interface CellProps {
   index: number;
@@ -81,11 +83,19 @@ const SudokuGrid = () => {
     Array(81).fill(false),
   );
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [showGameOver, setShowGameOver] = useState(false);
 
   useEffect(() => {
     const errors = validateCells(cells);
     setCellErrors(errors);
   }, [cells]);
+
+  useEffect(() => {
+    if (checkIfCompleted(cells, cellErrors)) {
+      setShowGameOver(true);
+      confetti({ particleCount: 150, spread: 70 });
+    }
+  }, [cellErrors]);
 
   const handleButtonsRowChange = (
     index: number,
@@ -101,6 +111,9 @@ const SudokuGrid = () => {
 
   return (
     <>
+      {showGameOver && (
+        <SudokuGameOverModal onClose={() => setShowGameOver(false)} />
+      )}
       <div className="grid grid-cols-9">
         {cells.map(({ value, hints }, index) => (
           <Cell

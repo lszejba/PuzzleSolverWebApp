@@ -54,3 +54,15 @@ export const validateCells = (cells: CellData[]): boolean[] => {
   }
   return result;
 };
+
+export const checkIfCompleted = (
+  cells: CellData[],
+  cellErrors: boolean[],
+): boolean => {
+  for (let i = 0; i < 81; i++) {
+    if (cells[i].value === "" || cellErrors[i] === true) {
+      return false;
+    }
+  }
+  return true;
+};
