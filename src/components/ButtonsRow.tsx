@@ -40,7 +40,7 @@ const ButtonsRow = ({
 
   useEffect(() => {
     setPressedButtons(new Set(Array.from(values, Number)));
-  }, [values]);
+  }, [values, selectedIndex]);
 
   const handleButtonPress = (num: number) => {
     setPressedButtons((prev) => {

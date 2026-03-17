@@ -1,10 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonsRow from "./ButtonsRow";
-
-interface CellData {
-  value: string;
-  hints: string;
-}
+import { validateCells } from "../utils/SudokuValidation";
+import type { CellData } from "../types/Sudoku";
 
 interface CellProps {
   index: number;
@@ -12,6 +9,7 @@ interface CellProps {
   setSelectedIndex: (newIndex: number) => void;
   value: string;
   hints: string;
+  error: boolean;
 }
 
 const Cell = ({
@@ -20,6 +18,7 @@ const Cell = ({
   setSelectedIndex,
   value,
   hints,
+  error,
 }: CellProps) => {
   const getCellBorder = (index: number) => {
     const row = Math.floor(index / 9);
@@ -65,7 +64,7 @@ const Cell = ({
     <button
       key={index}
       onClick={() => handleButtonPress()}
-      className={`${value === "" ? "text-xs" : "text-2xl"} whitespace-pre w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100/50" : "bg-transparent"} ${getCellBorder(index)}`}
+      className={`${value === "" ? "text-xs" : "text-2xl"} ${error === true ? "text-red-500" : "text-gray-500"} whitespace-pre w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100/50" : "bg-transparent"} ${getCellBorder(index)}`}
     >
       {getText(value, hints)}
     </button>
@@ -78,7 +77,15 @@ const SudokuGrid = () => {
       .fill(null)
       .map(() => ({ value: "", hints: "" })),
   );
+  const [cellErrors, setCellErrors] = useState<boolean[]>(
+    Array(81).fill(false),
+  );
   const [selectedIndex, setSelectedIndex] = useState(-1);
+
+  useEffect(() => {
+    const errors = validateCells(cells);
+    setCellErrors(errors);
+  }, [cells]);
 
   const handleButtonsRowChange = (
     index: number,
@@ -102,6 +109,7 @@ const SudokuGrid = () => {
             setSelectedIndex={setSelectedIndex}
             value={value}
             hints={hints}
+            error={cellErrors[index]}
           />
         ))}
       </div>
