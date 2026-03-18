@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 interface ButtonsRowProps {
-  children: string;
   type: "main" | "hint";
   selectedIndex: number;
   values: string;
@@ -11,23 +10,22 @@ interface ButtonsRowProps {
 
 const buttonSizeMap: Record<string, string> = {
   main: "w-13 h-13 rounded-full font-bold transition text-2xl",
-  hint: "w-12 h-12 rounded-full font-semibold transition text-base",
+  hint: "w-11 h-12 rounded-xl font-semibold transition text-base",
 };
 
 const buttonPressedMap: Record<string, string> = {
-  main: "bg-orange-800 text-gray-200 shadow-inner",
-  hint: "bg-orange-600 text-gray-300 shadow-inner",
+  main: "bg-green-800 text-gray-200 shadow-inner",
+  hint: "bg-green-600 text-gray-300 shadow-inner",
 };
 
 const buttonDefaultMap: Record<string, string> = {
-  main: "bg-orange-200 text-gray-800 hover:bg-gray-300 shadow",
-  hint: "bg-orange-300 text-gray-600 hover:bg-gray-400 shadow",
+  main: "bg-green-200 text-gray-800 hover:bg-gray-300 shadow",
+  hint: "bg-green-300 text-gray-600 hover:bg-gray-400 shadow",
 };
 
 const buttonDisabled: string = "bg-gray-200 text-gray-600 shadow";
 
 const ButtonsRow = ({
-  children,
   type = "main",
   selectedIndex,
   values = "",
@@ -37,6 +35,8 @@ const ButtonsRow = ({
   const [pressedButtons, setPressedButtons] = useState(
     () => new Set<number>(Array.from(values, Number)),
   );
+
+  const allSelected = type === "hint" && pressedButtons.size === 9;
 
   useEffect(() => {
     setPressedButtons(new Set(Array.from(values, Number)));
@@ -66,6 +66,21 @@ const ButtonsRow = ({
     });
   };
 
+  const handleAllPress = () => {
+    if (selectedIndex === -1) return;
+
+    const next = allSelected
+      ? new Set<number>()
+      : new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    onChange?.(
+      Array.from(next)
+        .sort((a, b) => a - b)
+        .join(""),
+    );
+    onAfterChange?.();
+    setPressedButtons(next);
+  };
+
   const getButtonStyle = (num: number): string => {
     if (selectedIndex === -1) return buttonDisabled;
     return pressedButtons.has(num)
@@ -75,7 +90,6 @@ const ButtonsRow = ({
 
   return (
     <div className="flex gap-2">
-      <h3>{children}</h3>
       {Array.from({ length: 9 }, (_, i) => i + 1).map((num) => {
         return (
           <button
@@ -87,6 +101,20 @@ const ButtonsRow = ({
           </button>
         );
       })}
+      {type === "hint" && (
+        <button
+          onClick={handleAllPress}
+          className={`w-11 h-12 rounded-xl font-semibold transition text-sm ${
+            selectedIndex === -1
+              ? buttonDisabled
+              : allSelected
+                ? buttonPressedMap[type]
+                : buttonDefaultMap[type]
+          }`}
+        >
+          All
+        </button>
+      )}
     </div>
   );
 };
