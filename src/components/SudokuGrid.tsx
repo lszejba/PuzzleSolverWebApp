@@ -55,10 +55,10 @@ const Cell = ({
   };
 
   const handleButtonPress = () => {
-    if (selectedIndex === -1) {
-      setSelectedIndex(index);
-    } else if (selectedIndex === index) {
+    if (selectedIndex === index) {
       setSelectedIndex(-1);
+    } else {
+      setSelectedIndex(index);
     }
   };
 
@@ -127,7 +127,6 @@ const SudokuGrid = () => {
         ))}
       </div>
       <ButtonsRow
-        children="!"
         type="main"
         selectedIndex={selectedIndex}
         values={selectedIndex === -1 ? "" : cells[selectedIndex].value}
@@ -137,7 +136,6 @@ const SudokuGrid = () => {
         onAfterChange={() => setSelectedIndex(-1)}
       />
       <ButtonsRow
-        children="?"
         type="hint"
         selectedIndex={selectedIndex}
         values={selectedIndex === -1 ? "" : cells[selectedIndex].hints}
