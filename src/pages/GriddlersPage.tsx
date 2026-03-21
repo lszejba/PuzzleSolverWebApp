@@ -5,8 +5,7 @@ function GriddlersPage() {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col justify-center items-center">
-      <h2 className="text-green-600">Griddlers</h2>
-      <ControlHeader children="Griddlers solver" />
+      <ControlHeader children="Griddlers" />
     </div>
   );
 }

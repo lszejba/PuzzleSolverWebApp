@@ -8,12 +8,12 @@ function HomePage() {
       <h1>Select puzzle type:</h1>
       <LinkButton
         children="Sudoku"
-        color="orange"
+        color="green"
         onClick={() => navigate("/sudoku")}
       />
       <LinkButton
         children="Griddlers"
-        color="green"
+        color="yellow"
         onClick={() => navigate("/griddlers")}
       />
     </div>
