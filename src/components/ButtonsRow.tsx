@@ -43,27 +43,24 @@ const ButtonsRow = ({
   }, [values, selectedIndex]);
 
   const handleButtonPress = (num: number) => {
-    setPressedButtons((prev) => {
-      if (selectedIndex === -1) {
-        return prev;
-      }
+    if (selectedIndex === -1) return;
 
-      let next: Set<number>;
-      if (type === "main" && prev.size > 0) {
-        next = prev.has(num) ? new Set() : new Set([num]);
-      } else {
-        next = new Set(prev);
-        next.has(num) ? next.delete(num) : next.add(num);
-      }
+    const prev = pressedButtons;
+    let next: Set<number>;
+    if (type === "main" && prev.size > 0) {
+      next = prev.has(num) ? new Set() : new Set([num]);
+    } else {
+      next = new Set(prev);
+      next.has(num) ? next.delete(num) : next.add(num);
+    }
 
-      onChange?.(
-        Array.from(next)
-          .sort((a, b) => a - b)
-          .join(""),
-      );
-      onAfterChange?.();
-      return next;
-    });
+    setPressedButtons(next);
+    onChange?.(
+      Array.from(next)
+        .sort((a, b) => a - b)
+        .join(""),
+    );
+    onAfterChange?.();
   };
 
   const handleAllPress = () => {

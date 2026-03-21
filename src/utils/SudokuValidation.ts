@@ -59,6 +59,7 @@ export const checkIfCompleted = (
   cells: CellData[],
   cellErrors: boolean[],
 ): boolean => {
+  if (cells.length === 0) return false;
   for (let i = 0; i < 81; i++) {
     if (cells[i].value === "" || cellErrors[i] === true) {
       return false;

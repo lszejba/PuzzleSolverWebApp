@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGameStore } from "../store/GameStore";
+import { usePlayback } from "../hooks/UsePlayback";
 
 interface ControlHeaderProps {
   children: string;
@@ -8,6 +10,8 @@ interface ControlHeaderProps {
 const ControlHeader = ({ children }: ControlHeaderProps) => {
   const navigate = useNavigate();
   const [isAuto, setIsAuto] = useState(false);
+  const { undo, redo } = useGameStore();
+  const { play, pause, isPlaying, canUndo, canRedo } = usePlayback();
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -39,13 +43,24 @@ const ControlHeader = ({ children }: ControlHeaderProps) => {
         </button>
       </div>
       <div className="flex flex-row items-center gap-4 p-1">
-        <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-4 border border-gray-400 rounded shadow">
+        <button
+          onClick={undo}
+          disabled={!canUndo}
+          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-4 border border-gray-400 rounded shadow"
+        >
           Prev
         </button>
-        <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-4 border border-gray-400 rounded shadow">
+        <button
+          onClick={isPlaying ? pause : play}
+          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-4 border border-gray-400 rounded shadow"
+        >
           Play / Pause
         </button>
-        <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-4 border border-gray-400 rounded shadow">
+        <button
+          onClick={redo}
+          disabled={!canRedo}
+          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-4 border border-gray-400 rounded shadow"
+        >
           Next
         </button>
       </div>

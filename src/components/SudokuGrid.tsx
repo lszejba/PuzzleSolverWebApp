@@ -95,11 +95,13 @@ const SudokuGrid = () => {
   const [showGameOver, setShowGameOver] = useState(false);
 
   useEffect(() => {
+    if (cells.length === 0) return;
     const errors = validateCells(cells);
     setCellErrors(errors);
   }, [cells]);
 
   useEffect(() => {
+    if (cells.length === 0) return;
     if (checkIfCompleted(cells, cellErrors)) {
       setShowGameOver(true);
       confetti({ particleCount: 150, spread: 70 });
