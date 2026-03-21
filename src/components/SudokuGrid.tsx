@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useGameStore } from "../store/GameStore";
 import ButtonsRow from "./ButtonsRow";
 import { validateCells, checkIfCompleted } from "../utils/SudokuValidation";
-import type { CellData } from "../types/Sudoku";
 import SudokuGameOverModal from "./SudokuGameOverModal";
 import confetti from "canvas-confetti";
 
@@ -74,11 +74,20 @@ const Cell = ({
 };
 
 const SudokuGrid = () => {
-  const [cells, setCells] = useState<CellData[]>(
-    Array(81)
-      .fill(null)
-      .map(() => ({ value: "", hints: "" })),
-  );
+  const cells = useGameStore((state) => state.currentCells());
+  const pushState = useGameStore((state) => state.pushState);
+
+  useEffect(() => {
+    if (cells.length === 0) {
+      pushState(
+        Array(81)
+          .fill(null)
+          .map(() => ({ value: "", hints: "" })),
+        "user",
+      );
+    }
+  }, []);
+
   const [cellErrors, setCellErrors] = useState<boolean[]>(
     Array(81).fill(false),
   );
@@ -102,11 +111,10 @@ const SudokuGrid = () => {
     field: "value" | "hints",
     newValue: string,
   ) => {
-    setCells((prev) =>
-      prev.map((cell, i) =>
-        i === index ? { ...cell, [field]: newValue } : cell,
-      ),
+    const next = cells.map((cell, i) =>
+      i === index ? { ...cell, [field]: newValue } : cell,
     );
+    pushState(next);
   };
 
   return (
