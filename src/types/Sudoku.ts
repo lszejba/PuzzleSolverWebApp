@@ -1,6 +1,7 @@
 export interface CellData {
   value: string;
   hints: string;
+  isInitial: boolean;
 }
 
 export interface GameState {
@@ -12,4 +13,10 @@ export interface GameState {
 export interface GameTimeline {
   states: GameState[];
   cursor: number;
+}
+
+export interface SudokuPuzzle {
+  id: string;
+  initialString: string;
+  difficulty?: "easy" | "medium" | "hard";
 }

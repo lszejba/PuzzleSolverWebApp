@@ -7,7 +7,7 @@ export function usePlayback(delayMs = 800) {
   const { cursor, states } = timeline;
 
   const isPlaying = intervalRef.current !== null;
-  const canUndo = cursor > 0;
+  const canUndo = cursor >= 0;
   const canRedo = cursor < states.length - 1;
 
   const pause = useCallback(() => {

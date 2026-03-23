@@ -11,6 +11,7 @@ interface CellProps {
   setSelectedIndex: (newIndex: number) => void;
   value: string;
   hints: string;
+  isInitial: boolean;
   error: boolean;
 }
 
@@ -20,6 +21,7 @@ const Cell = ({
   setSelectedIndex,
   value,
   hints,
+  isInitial,
   error,
 }: CellProps) => {
   const getCellBorder = (index: number) => {
@@ -55,6 +57,7 @@ const Cell = ({
   };
 
   const handleButtonPress = () => {
+    if (isInitial) return;
     if (selectedIndex === index) {
       setSelectedIndex(-1);
     } else {
@@ -66,7 +69,7 @@ const Cell = ({
     <button
       key={index}
       onClick={() => handleButtonPress()}
-      className={`${value === "" ? "text-xs" : "text-2xl"} ${error === true ? "text-red-500" : "text-gray-500"} whitespace-pre w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100/50" : "bg-transparent"} ${getCellBorder(index)}`}
+      className={`${value === "" ? "text-xs" : isInitial ? "text-3xl" : "text-2xl"} ${error === true ? "text-red-500" : isInitial ? "text-gray-300" : "text-gray-500"} whitespace-pre w-15 h-15 flex items-center justify-center cursor-pointer hover: ${index === selectedIndex ? "bg-blue-100/50" : "bg-transparent"} ${getCellBorder(index)}`}
     >
       {getText(value, hints)}
     </button>
@@ -74,19 +77,12 @@ const Cell = ({
 };
 
 const SudokuGrid = () => {
-  const cells = useGameStore((state) => state.currentCells());
+  const cells = useGameStore((state) =>
+    state.timeline.cursor >= 0
+      ? state.timeline.states[state.timeline.cursor].cells
+      : state.initialCells,
+  );
   const pushState = useGameStore((state) => state.pushState);
-
-  useEffect(() => {
-    if (cells.length === 0) {
-      pushState(
-        Array(81)
-          .fill(null)
-          .map(() => ({ value: "", hints: "" })),
-        "user",
-      );
-    }
-  }, []);
 
   const [cellErrors, setCellErrors] = useState<boolean[]>(
     Array(81).fill(false),
@@ -125,13 +121,14 @@ const SudokuGrid = () => {
         <SudokuGameOverModal onClose={() => setShowGameOver(false)} />
       )}
       <div className="grid grid-cols-9">
-        {cells.map(({ value, hints }, index) => (
+        {cells.map(({ value, hints, isInitial }, index) => (
           <Cell
             index={index}
             selectedIndex={selectedIndex}
             setSelectedIndex={setSelectedIndex}
             value={value}
             hints={hints}
+            isInitial={isInitial}
             error={cellErrors[index]}
           />
         ))}
