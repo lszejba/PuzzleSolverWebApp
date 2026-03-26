@@ -1,13 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import LinkButton from "../components/LinkButton";
-import { GenerateRandomSudoku, GenerateSudoku } from "../utils/SudokuGenerator";
+import { SudokuPuzzleLoader } from "../utils/SudokuPuzzleLoader";
 
 function HomePage() {
   const navigate = useNavigate();
-  const easySudokuState: string = GenerateSudoku("easy");
-  const mediumSudokuState: string = GenerateSudoku("medium");
-  const hardSudokuState: string = GenerateSudoku("hard");
-  const randomSudokuState: string = GenerateRandomSudoku();
+  const [
+    easySudokuState,
+    mediumSudokuState,
+    hardSudokuState,
+    randomSudokuState,
+  ] = SudokuPuzzleLoader();
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6">
       <h1>Select puzzle type:</h1>
