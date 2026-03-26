@@ -10,6 +10,6 @@ export const GenerateSudoku = (
   difficulty: "easy" | "medium" | "hard",
 ): string => {
   const sudoku = getSudoku(difficulty);
-  const result = sudoku.puzzle.replace("-", "0");
+  const result = sudoku.puzzle.replaceAll("-", "0");
   return result;
 };

@@ -2,6 +2,7 @@ interface LinkButtonProps {
   children: string;
   color?: string;
   onClick: () => void;
+  width: string;
 }
 
 const colorMap: Record<string, string> = {
@@ -13,10 +14,15 @@ const colorMap: Record<string, string> = {
   gray: "bg-gray-600 hover: bg-gray-700",
 };
 
-const LinkButton = ({ children, color = "blue", onClick }: LinkButtonProps) => {
+const LinkButton = ({
+  children,
+  color = "blue",
+  onClick,
+  width = "128",
+}: LinkButtonProps) => {
   return (
     <button
-      className={`w-128 px-6 py-3 ${colorMap[color]} text-white rounded-lg transition`}
+      className={`w-${width} px-6 py-3 ${colorMap[color]} text-white rounded-lg transition`}
       onClick={onClick}
     >
       {children}
